@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile Dashboard</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts: Space Grotesk (headings) + DM Sans (body) -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===================== CSS Variables ===================== */
+        :root {
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --accent-light: #d1fae5;
+            --accent-glow: rgba(16, 185, 129, 0.25);
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --warning: #f59e0b;
+            --bg-body-light: #f0f4f8;
+            --bg-card-light: #ffffff;
+            --bg-nav-light: #ffffff;
+            --text-primary-light: #0f172a;
+            --text-secondary-light: #64748b;
+            --border-light: #e2e8f0;
+            --shadow-card-light: 0 4px 24px rgba(0,0,0,0.06);
+            --shadow-card-hover-light: 0 12px 40px rgba(0,0,0,0.12);
+            --bg-body-dark: #0c1222;
+            --bg-card-dark: #1a2332;
+            --bg-nav-dark: #111827;
+            --text-primary-dark: #f1f5f9;
+            --text-secondary-dark: #94a3b8;
+            --border-dark: #2d3a4d;
+            --shadow-card-dark: 0 4px 24px rgba(0,0,0,0.3);
+            --shadow-card-hover-dark: 0 12px 40px rgba(16,185,129,0.15);
+            --transition-speed: 0.35s;
+        }
+
+        /* ===================== Base Styles ===================== */
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+            overflow-x: hidden;
+        }
+
+        body.light-mode {
+            background-color: var(--bg-body-light);
+            color: var(--text-primary-light);
+        }
+
+        body.dark-mode {
+            background-color: var(--bg-body-dark);
+            color: var(--text-primary-dark);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* ===================== Animated Background Blobs ===================== */
+        .bg-blobs {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.12;
+            animation: blobFloat 20s ease-in-out infinite;
+        }
+
+        body.dark-mode .blob { opacity: 0.06; }
+
+        .blob-1 {
+            width: 500px; height: 500px;
+            background: var(--accent);
+            top: -10%; left: -5%;
+            animation-delay: 0s;
+        }
+
+        .blob-2 {
+            width: 400px; height: 400px;
+            background: #f59e0b;
+            top: 50%; right: -8%;
+            animation-delay: -7s;
+            animation-duration: 25s;
+        }
+
+        .blob-3 {
+            width: 350px; height: 350px;
+            background: #0ea5e9;
+            bottom: -5%; left: 30%;
+            animation-delay: -14s;
+            animation-duration: 22s;
+        }
+
+        @keyframes blobFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(40px, -50px) scale(1.1); }
+            50% { transform: translate(-30px, 30px) scale(0.95); }
+            75% { transform: translate(50px, 40px) scale(1.05); }
+        }
+
+        /* ===================== Navbar ===================== */
+        .dashboard-nav {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all var(--transition-speed) ease;
+            z-index: 100;
+            border-bottom: 1px solid transparent;
+        }
+
+        body.light-mode .dashboard-nav {
+            background-color: rgba(255,255,255,0.85);
+            border-bottom-color: var(--border-light);
+        }
+
+        body.dark-mode .dashboard-nav {
+            background-color: rgba(17,24,39,0.9);
+            border-bottom-color: var(--border-dark);
+        }
+
+        .nav-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-title .accent-dot {
+            color: var(--accent);
+        }
+
+        .theme-toggle-btn {
+            border: 2px solid var(--accent);
+            background: transparent;
+            color: var(--accent);
+            border-radius: 50px;
+            padding: 6px 18px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .theme-toggle-btn:hover {
+            background: var(--accent);
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .theme-toggle-btn i {
+            margin-right: 6px;
+        }
+
+        /* ===================== Hero / Stats Section ===================== */
+        .hero-section {
+            position: relative;
+            z-index: 1;
+            padding: 2rem 0 0.5rem;
+        }
+
+        .hero-greeting {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 2.4rem;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+        }
+
+        body.dark-mode .hero-greeting { color: #f1f5f9; }
+        body.light-mode .hero-greeting { color: #0f172a; }
+
+        .hero-subtitle {
+            font-size: 1.05rem;
+            margin-top: 0.4rem;
+        }
+
+        body.dark-mode .hero-subtitle { color: #94a3b8; }
+        body.light-mode .hero-subtitle { color: #64748b; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.8rem;
+        }
+
+        .stat-card {
+            border-radius: 16px;
+            padding: 1.3rem 1.5rem;
+            transition: all var(--transition-speed) ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body.light-mode .stat-card {
+            background: var(--bg-card-light);
+            box-shadow: var(--shadow-card-light);
+            border: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .stat-card {
+            background: var(--bg-card-dark);
+            box-shadow: var(--shadow-card-dark);
+            border: 1px solid var(--border-dark);
+        }
+
+        .stat-card:hover { transform: translateY(-3px); }
+
+        .stat-icon {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.82rem;
+            font-weight: 500;
+            margin-top: 0.3rem;
+        }
+
+        body.dark-mode .stat-label { color: #94a3b8; }
+        body.light-mode .stat-label { color: #64748b; }
+
+        /* ===================== Search & Filter Section ===================== */
+        .filter-section {
+            position: relative;
+            z-index: 1;
+            padding: 1.5rem 0;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+        }
+
+        .search-input-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.95rem;
+        }
+
+        body.dark-mode .search-input-wrapper i { color: #94a3b8; }
+        body.light-mode .search-input-wrapper i { color: #94a3b8; }
+
+        .search-input {
+            width: 100%;
+            border-radius: 12px;
+            padding: 12px 16px 12px 44px;
+            font-size: 0.95rem;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.25s ease;
+            border: 2px solid transparent;
+        }
+
+        body.light-mode .search-input {
+            background: var(--bg-card-light);
+            color: var(--text-primary-light);
+            border-color: var(--border-light);
+        }
+
+        body.dark-mode .search-input {
+            background: var(--bg-card-dark);
+            color: var(--text-primary-dark);
+            border-color: var(--border-dark);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-glow);
+        }
+
+        .dept-filter-btn {
+            border-radius: 50px;
+            padding: 7px 18px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: 'DM Sans', sans-serif;
+            white-space: nowrap;
+        }
+
+        body.light-mode .dept-filter-btn {
+            background: var(--bg-card-light);
+            color: var(--text-secondary-light);
+            border-color: var(--border-light);
+        }
+
+        body.dark-mode .dept-filter-btn {
+            background: var(--bg-card-dark);
+            color: var(--text-secondary-dark);
+            border-color: var(--border-dark);
+        }
+
+        .dept-filter-btn:hover,
+        .dept-filter-btn.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
+
+        /* ===================== Student Cards ===================== */
+        .cards-section {
+            position: relative;
+            z-index: 1;
+            padding: 0 0 3rem;
+        }
+
+        .student-card {
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+        }
+
+        body.light-mode .student-card {
+            background: var(--bg-card-light);
+            box-shadow: var(--shadow-card-light);
+            border: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .student-card {
+            background: var(--bg-card-dark);
+            box-shadow: var(--shadow-card-dark);
+            border: 1px solid var(--border-dark);
+        }
+
+        .student-card:hover {
+            transform: translateY(-6px);
+        }
+
+        body.light-mode .student-card:hover {
+            box-shadow: var(--shadow-card-hover-light);
+        }
+
+        body.dark-mode .student-card:hover {
+            box-shadow: var(--shadow-card-hover-dark);
+        }
+
+        /* Card accent stripe at top */
+        .card-accent-stripe {
+            height: 4px;
+            width: 100%;
+            background: linear-gradient(90deg, var(--accent), #0ea5e9);
+        }
+
+        .card-body-inner {
+            padding: 1.5rem;
+        }
+
+        .student-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent);
+            padding: 3px;
+            background: #fff;
+            transition: transform 0.3s ease;
+        }
+
+        .dark-mode .student-avatar {
+            background: var(--bg-card-dark);
+        }
+
+        .student-card:hover .student-avatar {
+            transform: scale(1.08);
+        }
+
+        .student-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.15rem;
+            margin-bottom: 0.15rem;
+        }
+
+        .student-dept {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        body.dark-mode .student-dept { color: var(--accent); }
+        body.light-mode .student-dept { color: var(--accent); }
+
+        .student-semester {
+            font-size: 0.8rem;
+        }
+
+        body.dark-mode .student-semester { color: #94a3b8; }
+        body.light-mode .student-semester { color: #64748b; }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .status-badge.active {
+            background: var(--accent-light);
+            color: var(--accent-hover);
+        }
+
+        body.dark-mode .status-badge.active {
+            background: rgba(16,185,129,0.15);
+            color: #34d399;
+        }
+
+        .status-badge.inactive {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        body.dark-mode .status-badge.inactive {
+            background: rgba(239,68,68,0.15);
+            color: #f87171;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-badge.active .status-dot {
+            background: var(--accent);
+            animation: statusPulse 2s ease-in-out infinite;
+        }
+
+        .status-badge.inactive .status-dot {
+            background: var(--danger);
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.4); }
+        }
+
+        /* Action Buttons */
+        .btn-details {
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border: 2px solid var(--accent);
+            background: transparent;
+            color: var(--accent);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .btn-details:hover {
+            background: var(--accent);
+            color: #fff;
+            transform: scale(1.03);
+        }
+
+        .btn-toggle-status {
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .btn-toggle-status.to-inactive {
+            background: rgba(239,68,68,0.1);
+            color: var(--danger);
+        }
+
+        .btn-toggle-status.to-inactive:hover {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        .btn-toggle-status.to-active {
+            background: rgba(16,185,129,0.1);
+            color: var(--accent);
+        }
+
+        .btn-toggle-status.to-active:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-view-profile {
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border: 2px solid;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        body.light-mode .btn-view-profile {
+            border-color: var(--border-light);
+            color: var(--text-secondary-light);
+        }
+
+        body.dark-mode .btn-view-profile {
+            border-color: var(--border-dark);
+            color: var(--text-secondary-dark);
+        }
+
+        .btn-view-profile:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: scale(1.03);
+        }
+
+        /* ===================== Details Section ===================== */
+        .details-section {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        padding 0.35s ease,
+                        opacity 0.35s ease;
+            opacity: 0;
+        }
+
+        .details-section.show {
+            max-height: 400px;
+            opacity: 1;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.55rem;
+            font-size: 0.88rem;
+        }
+
+        .detail-item i {
+            width: 18px;
+            text-align: center;
+            color: var(--accent);
+            font-size: 0.85rem;
+        }
+
+        body.dark-mode .detail-item span { color: #cbd5e1; }
+        body.light-mode .detail-item span { color: #475569; }
+
+        .skill-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 3px 3px 3px 0;
+            transition: transform 0.2s ease;
+        }
+
+        .skill-badge:hover { transform: scale(1.1); }
+
+        /* Skill badge color palette — no blue/purple defaults */
+        .skill-color-0 { background: rgba(16,185,129,0.15); color: #10b981; }
+        .skill-color-1 { background: rgba(245,158,11,0.15); color: #d97706; }
+        .skill-color-2 { background: rgba(14,165,233,0.15); color: #0ea5e9; }
+        .skill-color-3 { background: rgba(244,63,94,0.15); color: #f43f5e; }
+        .skill-color-4 { background: rgba(249,115,22,0.15); color: #f97316; }
+        .skill-color-5 { background: rgba(20,184,166,0.15); color: #14b8a6; }
+
+        body.dark-mode .skill-color-0 { background: rgba(16,185,129,0.2); color: #34d399; }
+        body.dark-mode .skill-color-1 { background: rgba(245,158,11,0.2); color: #fbbf24; }
+        body.dark-mode .skill-color-2 { background: rgba(14,165,233,0.2); color: #38bdf8; }
+        body.dark-mode .skill-color-3 { background: rgba(244,63,94,0.2); color: #fb7185; }
+        body.dark-mode .skill-color-4 { background: rgba(249,115,22,0.2); color: #fb923c; }
+        body.dark-mode .skill-color-5 { background: rgba(20,184,166,0.2); color: #2dd4bf; }
+
+        /* ===================== Custom Modal ===================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content-custom {
+            border-radius: 24px;
+            max-width: 520px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+        }
+
+        body.light-mode .modal-content-custom {
+            background: #ffffff;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.15);
+        }
+
+        body.dark-mode .modal-content-custom {
+            background: var(--bg-card-dark);
+            box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+            border: 1px solid var(--border-dark);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 16px; right: 16px;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            z-index: 2;
+        }
+
+        body.light-mode .modal-close-btn {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        body.dark-mode .modal-close-btn {
+            background: #334155;
+            color: #94a3b8;
+        }
+
+        .modal-close-btn:hover {
+            background: var(--danger);
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .modal-header-bg {
+            height: 100px;
+            background: linear-gradient(135deg, var(--accent), #0ea5e9);
+            border-radius: 24px 24px 0 0;
+            position: relative;
+        }
+
+        .modal-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--accent);
+            background: #fff;
+            padding: 3px;
+            position: absolute;
+            bottom: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        body.dark-mode .modal-avatar { background: var(--bg-card-dark); }
+
+        .modal-body-inner {
+            padding: 3.5rem 2rem 2rem;
+        }
+
+        /* ===================== Footer ===================== */
+        .dashboard-footer {
+            position: relative;
+            z-index: 1;
+            padding: 2rem 0;
+            text-align: center;
+            font-size: 0.85rem;
+            transition: all var(--transition-speed) ease;
+        }
+
+        body.dark-mode .dashboard-footer {
+            background: var(--bg-nav-dark);
+            color: #94a3b8;
+            border-top: 1px solid var(--border-dark);
+        }
+
+        body.light-mode .dashboard-footer {
+            background: var(--bg-nav-light);
+            color: #64748b;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .dashboard-footer .accent-text { color: var(--accent); font-weight: 600; }
+
+        /* ===================== Empty State ===================== */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+        }
+
+        .empty-state p {
+            font-size: 0.95rem;
+        }
+
+        body.dark-mode .empty-state p { color: #94a3b8; }
+        body.light-mode .empty-state p { color: #64748b; }
+
+        /* ===================== Reduced Motion ===================== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ===================== Responsive ===================== */
+        @media (max-width: 768px) {
+            .hero-greeting { font-size: 1.7rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+            .stat-card { padding: 1rem 1.2rem; }
+            .stat-value { font-size: 1.4rem; }
+            .modal-body-inner { padding: 3rem 1.2rem 1.5rem; }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .hero-greeting { font-size: 1.4rem; }
+            .nav-title { font-size: 1.05rem; }
+        }
+
+        /* ===================== Scrollbar Styling ===================== */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        body.light-mode ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        body.dark-mode ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+    </style>
+</head>
+
+<body class="light-mode">
+
+    <!-- Animated background blobs -->
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- React Mount Point -->
+    <div id="root"></div>
+
+    <!-- React 18 + Babel Standalone -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+        /* ============================================================
+         *  Student Profile Dashboard — React Application
+         *  Functional Components + useState + Props + Conditional Rendering
+         * ============================================================ */
+
+        const { useState } = React;
+
+        /* ==================== Student Data ==================== */
+        const studentsData = [
+            {
+                id: 1,
+                name: "Ali Khan",
+                department: "Computer Science",
+                semester: 6,
+                email: "ali.khan@university.edu",
+                phone: "+92 300 1234567",
+                cgpa: 3.5,
+                skills: ["React", "JavaScript", "Node.js"],
+                image: "https://i.pravatar.cc/150?img=3",
+                active: true
+            },
+            {
+                id: 2,
+                name: "Sara Ahmed",
+                department: "Software Engineering",
+                semester: 4,
+                email: "sara.ahmed@university.edu",
+                phone: "+92 311 2345678",
+                cgpa: 3.8,
+                skills: ["HTML", "CSS", "React"],
+                image: "https://i.pravatar.cc/150?img=5",
+                active: true
+            },
+            {
+                id: 3,
+                name: "Usman Tariq",
+                department: "Information Technology",
+                semester: 8,
+                email: "usman.t@university.edu",
+                phone: "+92 321 3456789",
+                cgpa: 3.2,
+                skills: ["Python", "Django", "PostgreSQL"],
+                image: "https://i.pravatar.cc/150?img=8",
+                active: false
+            },
+            {
+                id: 4,
+                name: "Fatima Noor",
+                department: "Computer Science",
+                semester: 2,
+                email: "fatima.n@university.edu",
+                phone: "+92 333 4567890",
+                cgpa: 3.9,
+                skills: ["Java", "Spring Boot", "MySQL"],
+                image: "https://i.pravatar.cc/150?img=9",
+                active: true
+            },
+            {
+                id: 5,
+                name: "Ahmed Raza",
+                department: "Artificial Intelligence",
+                semester: 5,
+                email: "ahmed.r@university.edu",
+                phone: "+92 345 5678901",
+                cgpa: 3.6,
+                skills: ["TensorFlow", "Python", "Data Science"],
+                image: "https://i.pravatar.cc/150?img=12",
+                active: true
+            },
+            {
+                id: 6,
+                name: "Zainab Malik",
+                department: "Software Engineering",
+                semester: 3,
+                email: "zainab.m@university.edu",
+                phone: "+92 355 6789012",
+                cgpa: 3.4,
+                skills: ["Flutter", "Dart", "Firebase"],
+                image: "https://i.pravatar.cc/150?img=16",
+                active: false
+            },
+            {
+                id: 7,
+                name: "Hassan Ali",
+                department: "Computer Science",
+                semester: 7,
+                email: "hassan.a@university.edu",
+                phone: "+92 366 7890123",
+                cgpa: 3.7,
+                skills: ["C++", "OpenGL", "Algorithms"],
+                image: "https://i.pravatar.cc/150?img=14",
+                active: true
+            },
+            {
+                id: 8,
+                name: "Maryam Siddiqui",
+                department: "Data Science",
+                semester: 6,
+                email: "maryam.s@university.edu",
+                phone: "+92 377 8901234",
+                cgpa: 3.3,
+                skills: ["R", "Tableau", "Machine Learning"],
+                image: "https://i.pravatar.cc/150?img=20",
+                active: true
+            }
+        ];
+
+        /* ==================== Navbar Component ==================== */
+        function NavBar({ isDarkMode, toggleTheme }) {
+            return (
+                <nav className="dashboard-nav py-3 sticky-top">
+                    <div className="container d-flex justify-content-between align-items-center">
+                        {/* Brand / Title */}
+                        <span className="nav-title mb-0">
+                            <i className="fas fa-graduation-cap me-2" style={{ color: 'var(--accent)' }}></i>
+                            Student Profile<span className="accent-dot"> Dashboard</span>
+                        </span>
+
+                        {/* Theme Toggle Button */}
+                        <button
+                            className="theme-toggle-btn"
+                            onClick={toggleTheme}
+                            aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                        >
+                            <i className={isDarkMode ? 'fas fa-sun' : 'fas fa-moon'}></i>
+                            {isDarkMode ? ' Light Mode' : ' Dark Mode'}
+                        </button>
+                    </div>
+                </nav>
+            );
+        }
+
+        /* ==================== Stats Bar Component ==================== */
+        function StatsBar({ students, isDarkMode }) {
+            // Compute statistics from current student data
+            const totalStudents = students.length;
+            const activeCount = students.filter(s => s.active).length;
+            const avgCGPA = (students.reduce((sum, s) => sum + s.cgpa, 0) / totalStudents).toFixed(2);
+            const departments = [...new Set(students.map(s => s.department))].length;
+
+            const stats = [
+                {
+                    icon: 'fas fa-users',
+                    label: 'Total Students',
+                    value: totalStudents,
+                    iconBg: 'rgba(16,185,129,0.15)',
+                    iconColor: '#10b981'
+                },
+                {
+                    icon: 'fas fa-user-check',
+                    label: 'Active Students',
+                    value: activeCount,
+                    iconBg: 'rgba(14,165,233,0.15)',
+                    iconColor: '#0ea5e9'
+                },
+                {
+                    icon: 'fas fa-chart-line',
+                    label: 'Average CGPA',
+                    value: avgCGPA,
+                    iconBg: 'rgba(245,158,11,0.15)',
+                    iconColor: '#f59e0b'
+                },
+                {
+                    icon: 'fas fa-building-columns',
+                    label: 'Departments',
+                    value: departments,
+                    iconBg: 'rgba(244,63,94,0.15)',
+                    iconColor: '#f43f5e'
+                }
+            ];
+
+            return (
+                <div className="stats-grid">
+                    {stats.map((stat, idx) => (
+                        <div className="stat-card" key={idx}>
+                            <div className="stat-icon" style={{ background: stat.iconBg, color: stat.iconColor }}>
+                                <i className={stat.icon}></i>
+                            </div>
+                            <div className="stat-value">{stat.value}</div>
+                            <div className="stat-label">{stat.label}</div>
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        /* ==================== Student Card Component ==================== */
+        function StudentCard({ student, isDarkMode, toggleStatus, onViewProfile }) {
+            // State to manage showing/hiding student details
+            const [showDetails, setShowDetails] = useState(false);
+
+            // Skill badge color palette cycling
+            const getSkillColor = (index) => `skill-color-${index % 6}`;
+
+            return (
+                <div className="col-lg-4 col-md-6 mb-4">
+                    <div className="student-card">
+                        {/* Accent stripe at top of card */}
+                        <div className="card-accent-stripe"></div>
+
+                        <div className="card-body-inner">
+                            {/* Student Avatar + Basic Info */}
+                            <div className="d-flex align-items-center mb-3">
+                                <img
+                                    src={student.image}
+                                    alt={`${student.name}'s avatar`}
+                                    className="student-avatar me-3"
+                                    loading="lazy"
+                                />
+                                <div>
+                                    <div className="student-name">{student.name}</div>
+                                    <div className="student-dept">{student.department}</div>
+                                    <div className="student-semester">
+                                        <i className="fas fa-book-open me-1" style={{ fontSize: '0.7rem' }}></i>
+                                        Semester {student.semester}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Status Badge */}
+                            <div className="mb-3">
+                                <span className={`status-badge ${student.active ? 'active' : 'inactive'}`}>
+                                    <span className="status-dot"></span>
+                                    {student.active ? 'Active' : 'Inactive'}
+                                </span>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="d-flex flex-wrap gap-2 mb-2">
+                                {/* Show/Hide Details Button — Conditional Rendering */}
+                                <button
+                                    className="btn-details"
+                                    onClick={() => setShowDetails(!showDetails)}
+                                >
+                                    <i className={`fas ${showDetails ? 'fa-eye-slash' : 'fa-eye'} me-1`}></i>
+                                    {showDetails ? 'Hide Details' : 'Show Details'}
+                                </button>
+
+                                {/* Toggle Status Button */}
+                                <button
+                                    className={`btn-toggle-status ${student.active ? 'to-inactive' : 'to-active'}`}
+                                    onClick={() => toggleStatus(student.id)}
+                                >
+                                    <i className={`fas ${student.active ? 'fa-user-slash' : 'fa-user-check'} me-1`}></i>
+                                    {student.active ? 'Deactivate' : 'Activate'}
+                                </button>
+                            </div>
+
+                            {/* View Full Profile Button */}
+                            <button
+                                className="btn-view-profile w-100 mt-1"
+                                onClick={() => onViewProfile(student)}
+                            >
+                                <i className="fas fa-id-card me-1"></i>
+                                View Full Profile
+                            </button>
+
+                            {/* Details Section — Conditional Rendering with Animation */}
+                            <div className={`details-section ${showDetails ? 'show' : ''}`}>
+                                <div style={{ paddingTop: '1rem', borderTop: '1px solid var(--border-light)' }}>
+                                    {isDarkMode && <style>{`.details-section.show { border-top-color: var(--border-dark) !important; }`}</style>}
+
+                                    <div className="detail-item">
+                                        <i className="fas fa-envelope"></i>
+                                        <span>{student.email}</span>
+                                    </div>
+                                    <div className="detail-item">
+                                        <i className="fas fa-phone"></i>
+                                        <span>{student.phone}</span>
+                                    </div>
+                                    <div className="detail-item">
+                                        <i className="fas fa-star"></i>
+                                        <span>CGPA: <strong>{student.cgpa.toFixed(1)}</strong></span>
+                                    </div>
+
+                                    {/* Skills List as Badges */}
+                                    <div className="mt-2">
+                                        <small className="fw-semibold" style={{ color: isDarkMode ? '#94a3b8' : '#64748b' }}>
+                                            <i className="fas fa-tools me-1"></i>Skills
+                                        </small>
+                                        <div className="mt-1">
+                                            {student.skills.map((skill, idx) => (
+                                                <span
+                                                    className={`skill-badge ${getSkillColor(idx)}`}
+                                                    key={idx}
+                                                >
+                                                    {skill}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        /* ==================== Student List Component ==================== */
+        function StudentList({ students, isDarkMode, toggleStatus, onViewProfile }) {
+            // State for search filter
+            const [searchTerm, setSearchTerm] = useState('');
+            // State for department filter
+            const [selectedDept, setSelectedDept] = useState('All');
+
+            // Get unique departments from student data
+            const departments = ['All', ...new Set(studentsData.map(s => s.department))];
+
+            // Filter students based on search term and selected department
+            const filteredStudents = students.filter(student => {
+                const matchesSearch =
+                    student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    student.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    student.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()));
+
+                const matchesDept = selectedDept === 'All' || student.department === selectedDept;
+
+                return matchesSearch && matchesDept;
+            });
+
+            return (
+                <div>
+                    {/* Search and Filter Controls */}
+                    <div className="filter-section">
+                        <div className="container">
+                            <div className="row align-items-center g-3">
+                                {/* Search Input */}
+                                <div className="col-lg-5 col-md-6">
+                                    <div className="search-input-wrapper">
+                                        <i className="fas fa-search"></i>
+                                        <input
+                                            type="text"
+                                            className="search-input"
+                                            placeholder="Search by name, department, or skill..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            aria-label="Search students"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Department Filter Buttons */}
+                                <div className="col-lg-7 col-md-6">
+                                    <div className="d-flex flex-wrap gap-2">
+                                        {departments.map(dept => (
+                                            <button
+                                                key={dept}
+                                                className={`dept-filter-btn ${selectedDept === dept ? 'active' : ''}`}
+                                                onClick={() => setSelectedDept(dept)}
+                                            >
+                                                {dept}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Results Count */}
+                            <div className="mt-3" style={{ fontSize: '0.88rem' }}>
+                                <span style={{ color: isDarkMode ? '#94a3b8' : '#64748b' }}>
+                                    Showing <strong style={{ color: 'var(--accent)' }}>{filteredStudents.length}</strong> of {students.length} students
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Student Cards Grid */}
+                    <div className="cards-section">
+                        <div className="container">
+                            {filteredStudents.length > 0 ? (
+                                <div className="row">
+                                    {filteredStudents.map(student => (
+                                        <StudentCard
+                                            key={student.id}
+                                            student={student}
+                                            isDarkMode={isDarkMode}
+                                            toggleStatus={toggleStatus}
+                                            onViewProfile={onViewProfile}
+                                        />
+                                    ))}
+                                </div>
+                            ) : (
+                                /* Empty state when no students match the filter */
+                                <div className="empty-state">
+                                    <i className="fas fa-search"></i>
+                                    <h4>No Students Found</h4>
+                                    <p>Try adjusting your search or filter criteria.</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        /* ==================== Student Modal Component ==================== */
+        function StudentModal({ student, isDarkMode, onClose }) {
+            // Close modal when clicking the overlay background
+            const handleOverlayClick = (e) => {
+                if (e.target === e.currentTarget) onClose();
+            };
+
+            // Close modal on Escape key
+            React.useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (e.key === 'Escape') onClose();
+                };
+                document.addEventListener('keydown', handleKeyDown);
+                return () => document.removeEventListener('keydown', handleKeyDown);
+            }, [onClose]);
+
+            if (!student) return null;
+
+            const getSkillColor = (index) => `skill-color-${index % 6}`;
+
+            return (
+                <div className="modal-overlay" onClick={handleOverlayClick}>
+                    <div className="modal-content-custom" role="dialog" aria-modal="true">
+                        {/* Close Button */}
+                        <button className="modal-close-btn" onClick={onClose} aria-label="Close modal">
+                            <i className="fas fa-times"></i>
+                        </button>
+
+                        {/* Header Gradient Background */}
+                        <div className="modal-header-bg">
+                            <img
+                                src={student.image}
+                                alt={student.name}
+                                className="modal-avatar"
+                            />
+                        </div>
+
+                        {/* Modal Body */}
+                        <div className="modal-body-inner text-center">
+                            <h4 className="student-name mb-1" style={{ fontSize: '1.4rem' }}>{student.name}</h4>
+                            <div className="student-dept mb-1">{student.department}</div>
+                            <div className="student-semester mb-3">Semester {student.semester}</div>
+
+                            {/* Status Badge */}
+                            <span className={`status-badge ${student.active ? 'active' : 'inactive'} mb-4`} style={{ display: 'inline-flex' }}>
+                                <span className="status-dot"></span>
+                                {student.active ? 'Active' : 'Inactive'}
+                            </span>
+
+                            {/* Full Details Grid */}
+                            <div className="text-start mt-3" style={{ fontSize: '0.92rem' }}>
+                                <div className="row g-3">
+                                    <div className="col-6">
+                                        <div className="stat-card text-center" style={{ padding: '1rem' }}>
+                                            <i className="fas fa-envelope mb-2" style={{ color: 'var(--accent)', fontSize: '1.1rem' }}></i>
+                                            <div style={{ fontSize: '0.75rem', color: isDarkMode ? '#94a3b8' : '#64748b' }}>Email</div>
+                                            <div style={{ fontSize: '0.8rem', fontWeight: 600, wordBreak: 'break-all' }}>{student.email}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col-6">
+                                        <div className="stat-card text-center" style={{ padding: '1rem' }}>
+                                            <i className="fas fa-phone mb-2" style={{ color: 'var(--accent)', fontSize: '1.1rem' }}></i>
+                                            <div style={{ fontSize: '0.75rem', color: isDarkMode ? '#94a3b8' : '#64748b' }}>Phone</div>
+                                            <div style={{ fontSize: '0.8rem', fontWeight: 600 }}>{student.phone}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col-12">
+                                        <div className="stat-card text-center" style={{ padding: '1rem' }}>
+                                            <i className="fas fa-star mb-2" style={{ color: '#f59e0b', fontSize: '1.1rem' }}></i>
+                                            <div style={{ fontSize: '0.75rem', color: isDarkMode ? '#94a3b8' : '#64748b' }}>CGPA</div>
+                                            <div className="stat-value" style={{ fontSize: '1.5rem', color: 'var(--accent)' }}>{student.cgpa.toFixed(1)}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Skills Section */}
+                                <div className="mt-3 text-center">
+                                    <small className="fw-semibold" style={{ color: isDarkMode ? '#94a3b8' : '#64748b' }}>
+                                        <i className="fas fa-tools me-1"></i>Skills & Technologies
+                                    </small>
+                                    <div className="mt-2">
+                                        {student.skills.map((skill, idx) => (
+                                            <span className={`skill-badge ${getSkillColor(idx)}`} key={idx} style={{ fontSize: '0.82rem', padding: '5px 14px' }}>
+                                                {skill}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        /* ==================== Footer Component ==================== */
+        function Footer({ isDarkMode }) {
+            return (
+                <footer className="dashboard-footer">
+                    <div className="container">
+                        <p className="mb-0">
+                            <i className="fas fa-code me-1"></i> Built with React &amp; Bootstrap |
+                            Student Profile Dashboard <span className="accent-text">2025</span>
+                        </p>
+                    </div>
+                </footer>
+            );
+        }
+
+        /* ==================== App Component (Root) ==================== */
+        function App() {
+            // Theme state — false = Light Mode, true = Dark Mode
+            const [isDarkMode, setIsDarkMode] = useState(false);
+
+            // Students state — lifted up so status changes reflect everywhere
+            const [students, setStudents] = useState(studentsData);
+
+            // Modal state — selected student for full profile view
+            const [selectedStudent, setSelectedStudent] = useState(null);
+            const [showModal, setShowModal] = useState(false);
+
+            // Toggle theme handler
+            const toggleTheme = () => {
+                setIsDarkMode(!isDarkMode);
+                // Update body class for global styling
+                document.body.className = isDarkMode ? 'light-mode' : 'dark-mode';
+            };
+
+            // Toggle student active/inactive status handler
+            const toggleStatus = (id) => {
+                setStudents(students.map(s =>
+                    s.id === id ? { ...s, active: !s.active } : s
+                ));
+            };
+
+            // Open modal with selected student
+            const handleViewProfile = (student) => {
+                setSelectedStudent(student);
+                setShowModal(true);
+            };
+
+            // Close modal
+            const handleCloseModal = () => {
+                setShowModal(false);
+                setSelectedStudent(null);
+            };
+
+            // When modal is open, get the latest version of that student from state
+            const currentSelectedStudent = selectedStudent
+                ? students.find(s => s.id === selectedStudent.id) || selectedStudent
+                : null;
+
+            return (
+                <div>
+                    {/* Navbar */}
+                    <NavBar isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+
+                    {/* Hero + Stats Section */}
+                    <section className="hero-section">
+                        <div className="container">
+                            <div className="hero-greeting">
+                                Welcome to the Dashboard
+                            </div>
+                            <p className="hero-subtitle">
+                                Track student profiles, manage status, and explore details — all in one place.
+                            </p>
+                            <StatsBar students={students} isDarkMode={isDarkMode} />
+                        </div>
+                    </section>
+
+                    {/* Student List with Search and Filters */}
+                    <StudentList
+                        students={students}
+                        isDarkMode={isDarkMode}
+                        toggleStatus={toggleStatus}
+                        onViewProfile={handleViewProfile}
+                    />
+
+                    {/* Full Profile Modal — Conditional Rendering */}
+                    {showModal && currentSelectedStudent && (
+                        <StudentModal
+                            student={currentSelectedStudent}
+                            isDarkMode={isDarkMode}
+                            onClose={handleCloseModal}
+                        />
+                    )}
+
+                    {/* Footer */}
+                    <Footer isDarkMode={isDarkMode} />
+                </div>
+            );
+        }
+
+        /* ==================== Render the App ==================== */
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
